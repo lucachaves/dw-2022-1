@@ -9,6 +9,7 @@ $ code --list-extensions
 DotJoshJohnson.xml
 esbenp.prettier-vscode
 jenkey2011.string-highlight
+humao.rest-client
 miguelsolorio.fluent-icons
 ms-azuretools.vscode-docker
 ms-vscode-remote.remote-containers

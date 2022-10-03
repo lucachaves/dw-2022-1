@@ -1,0 +1,33 @@
+@server=http://localhost:3000
+
+### List hosts
+
+GET {{server}}/hosts
+
+### Get first host
+
+GET {{server}}/hosts/1
+
+### Create host
+
+POST {{server}}/hosts
+Content-Type: application/json
+
+{
+  "name": "Cloudflare",
+  "address": "1.1.1.1"
+}
+
+### Update host
+
+PUT {{server}}/hosts/4
+Content-Type: application/json
+
+{
+  "name": "Cloudflare DNS",
+  "address": "1.1.1.1"
+}
+
+### Delete host
+
+DELETE {{server}}/hosts/4
