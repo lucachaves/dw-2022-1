@@ -1,0 +1,36 @@
+### get /
+
+GET http://localhost:3000/
+
+### get /hello/en
+
+GET http://localhost:3000/hello/en?name=John
+
+### get /hello/en
+
+GET http://localhost:3000/hello/en
+
+### get /hello/pt/:name
+
+GET http://localhost:3000/hello/pt/
+
+### get /hello/pt/:name
+
+GET http://localhost:3000/hello/pt/John
+
+### post /hello/es
+
+POST http://localhost:3000/hello/es
+Content-Type: application/json
+
+{
+  "name": "John"
+}
+
+### post /hello/es
+
+POST http://localhost:3000/hello/es
+
+### get /hello/fr
+
+GET http://localhost:3000/hello/fr
