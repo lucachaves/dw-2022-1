@@ -1,0 +1,30 @@
+### post uppercase
+
+POST http://localhost:3000/util/text/uppercase
+Content-Type: application/json
+
+{
+  "input": "ifpb"
+}
+
+### post uppercase
+
+POST http://localhost:3000/util/text/UPPERCASE
+Content-Type: application/json
+
+{
+  "input": "ifpb"
+}
+
+### post uppercase
+
+POST http://localhost:3000/util/text/UPERCASE
+Content-Type: application/json
+
+{
+  "input": "ifpb"
+}
+
+### post uppercase
+
+POST http://localhost:3000/util/text
