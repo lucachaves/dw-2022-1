@@ -1,0 +1,51 @@
+@host=http://localhost:3000
+
+### post uppercase (valid)
+
+POST {{host}}/util/text/uppercase
+Content-Type: application/json
+
+{
+  "input": "ifpb"
+}
+
+### post LOWERCASE
+
+POST {{host}}/util/text/LOWERCASE
+Content-Type: application/json
+
+{
+  "input": "IFPB"
+}
+
+### post UPERCASE (invalid action)
+
+POST {{host}}/util/text/UPERCASE
+Content-Type: application/json
+
+{
+  "input": "ifpb"
+}
+
+### post uppercase (request without content)
+
+POST {{host}}/util/text/uppercase
+
+### get minimum 1, 10, 100
+
+GET {{host}}/util/number/minimum?input=1,10,100
+
+### get maximum 1, 10, 100
+
+GET {{host}}/util/number/maximum?input=1,10,100
+
+### get maximum (invalid action)
+
+GET {{host}}/util/number/max?input=1,10,100
+
+### get maximum (request without input)
+
+GET {{host}}/util/number/maximum
+
+### get maximum (invalid input)
+GET {{host}}/util/number/maximum?input=1,a,100
