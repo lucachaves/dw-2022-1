@@ -1,8 +1,8 @@
 export function processText(text, action) {
-  switch (action) {
-    case "lowercase":
+  switch (action.toLowerCase()) {
+    case 'lowercase':
       return text.toLowerCase();
-    case "uppercase":
+    case 'uppercase':
       return text.toUpperCase();
   }
 }

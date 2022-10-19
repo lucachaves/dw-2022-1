@@ -1,4 +1,4 @@
-### post uppercase
+### post uppercase (valid)
 
 POST http://localhost:3000/util/text/uppercase
 Content-Type: application/json
@@ -7,16 +7,16 @@ Content-Type: application/json
   "input": "ifpb"
 }
 
-### post uppercase
+### post LOWERCASE
 
-POST http://localhost:3000/util/text/UPPERCASE
+POST http://localhost:3000/util/text/LOWERCASE
 Content-Type: application/json
 
 {
-  "input": "ifpb"
+  "input": "IFPB"
 }
 
-### post uppercase
+### post UPERCASE (invalid action)
 
 POST http://localhost:3000/util/text/UPERCASE
 Content-Type: application/json
@@ -25,6 +25,6 @@ Content-Type: application/json
   "input": "ifpb"
 }
 
-### post uppercase
+### post uppercase (request without content)
 
-POST http://localhost:3000/util/text
+POST http://localhost:3000/util/text/uppercase

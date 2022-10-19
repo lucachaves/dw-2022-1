@@ -1,32 +1,46 @@
-import express from "express";
+import express from 'express';
 
-import { processText } from "./lib/text.js";
+import { processText } from './lib/text.js';
 
 const router = express.Router();
 
-router.post("/util/text/:action", (req, res) => {
-  const action = req.params.action;
+router.post('/util/text/:action', (req, res) => {
+  try {
+    const action = req.params.action;
 
-  const input = req.body.input;
+    const input = req.body.input;
 
-  const result = {
-    action,
-    input,
-    output: processText(input, action),
-  };
+    if (!input) {
+      throw new Error('Request whithout input');
+    }
 
-  res.json(result);
+    const output = processText(input, action);
+
+    if (output) {
+      const result = {
+        action,
+        input,
+        output,
+      };
+
+      res.json(result);
+    } else {
+      throw new Error('Invalid action');
+    }
+  } catch (error) {
+    res.status(400).send(error.message);
+  }
 });
 
 // 404 handler
-app.use((req, res, next) => {
-  res.status(404).send("Content not found!");
+router.use((req, res, next) => {
+  res.status(404).send('Content not found!');
 });
 
 // Error handler
-app.use((err, req, res, next) => {
+router.use((err, req, res, next) => {
   // console.error(err.stack);
-  res.status(500).send("Something broke!");
+  res.status(500).send('Something broke!');
 });
 
 export default router;
