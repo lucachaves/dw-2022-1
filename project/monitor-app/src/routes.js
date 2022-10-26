@@ -1,8 +1,20 @@
 import express from 'express';
 
+import Hosts from './database/index.js';
+
 import { getHostLatency } from './lib/network.js';
 
 const router = express.Router();
+
+router.get('/hosts', (req, res) => {
+  const hosts = Hosts.readAll();
+
+  res.json(hosts);
+});
+
+// router.post('/hosts')
+
+// router.delete('/hosts/:id')
 
 router.get('/hosts/:hostId/times', async (req, res) => {
   const hostId = req.params.hostId;
