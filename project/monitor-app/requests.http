@@ -1,9 +1,55 @@
 @host = http://localhost:3000
+@createHostId = {{createHost.response.body.id}}
 
 ### Get latency
 
-GET {{host}}/hosts/1/times
+GET {{host}}/hosts/{{createHostId}}/times
 
-### Get latency
+### Get latency with specific count
 
-GET {{host}}/hosts/1/times?count=3
+GET {{host}}/hosts/{{createHostId}}/times?count=3
+
+### List Hosts
+
+GET {{host}}/hosts
+
+### Create Host
+
+# @name createHost
+POST {{host}}/hosts
+Content-Type: application/json
+
+{
+  "name": "Cloudflare",
+  "address": "1.1.1.0"
+}
+
+### Update Host
+
+PUT {{host}}/hosts/{{createHostId}}
+Content-Type: application/json
+
+{
+  "name": "Cloudflare",
+  "address": "1.1.1.1"
+}
+
+### Remove host
+
+DELETE {{host}}/hosts/{{createHostId}}
+
+### List Users
+
+GET {{host}}/users
+
+### Create User
+
+# @name createUser
+POST {{host}}/users
+Content-Type: application/json
+
+{
+  "name": "Luiz",
+  "email": "luiz@email.com",
+  "password": "123"
+}

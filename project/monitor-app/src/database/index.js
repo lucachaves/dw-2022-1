@@ -1,20 +1,17 @@
-const hosts = [
-  {
-    id: 1,
-    name: 'Google DNS',
-    address: '8.8.8.8',
-  },
-  {
-    id: 2,
-    name: 'Google Search',
-    address: 'www.google.com',
-  },
-];
-
-function readAll() {
-  return hosts;
-}
-
-export default {
-  readAll,
+const db = {
+  hosts: [
+    {
+      id: "9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d",
+      name: "Google DNS",
+      address: "8.8.8.8",
+    },
+    {
+      id: "1b9d6bcd-bbfd-4b2d-9b5d-ab8dfbbd4bed",
+      name: "Google Search",
+      address: "www.google.com",
+    },
+  ],
+  users: [],
 };
+
+export default db;

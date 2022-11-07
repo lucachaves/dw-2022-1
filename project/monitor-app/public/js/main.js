@@ -8,8 +8,11 @@ function insertHostRow({ id, name, address }) {
     <td>${name}</td>
     <td>${address}</td>
     <td>
-      <i class="fa-solid fa-stopwatch" onclick="loadChartData(${id})"></i>
-      <i class="ms-3 fa-solid fa-trash-can" onclick="removeHost(${id})"></i>
+      <i class="fa-solid fa-stopwatch" onclick="loadChartData('${id}')"></i>
+      <i class="ms-3 fa-solid fa-trash-can" onclick="removeHost('${id}', '${name}')"></i>
+      <div class="ms-3 invisible spinner-border spinner-border-sm" role="status">
+        <span class="visually-hidden">Loading...</span>
+      </div>
     </td>
   </tr>`;
 
@@ -49,8 +52,8 @@ async function handleSubmit(event) {
   createHostForm.reset();
 }
 
-function removeHost(id) {
-  const result = confirm(`Deseja excluir o host ${id}?`);
+function removeHost(id, name) {
+  const result = confirm(`Deseja excluir o host ${name}?`);
 
   if (result) {
     const tr = document.querySelector(`#host-${id}`);
@@ -91,11 +94,15 @@ function initChart() {
 }
 
 async function loadChartData(id) {
-  const times = await (
-    await fetch(`http://localhost:3000/hosts/${id}/times`)
+  const spinner = document.querySelector(`#host-${id} .spinner-border`);
+
+  spinner.classList.toggle("invisible");
+
+  const response = await (
+    await fetch(`http://localhost:3000/hosts/${id}/times?count=3`)
   ).json();
 
-  const data = times.map((time) => time.time);
+  const data = response.times;
 
   const labels = [...data.keys()];
 
@@ -104,6 +111,8 @@ async function loadChartData(id) {
   myChart.data.datasets[0].data = data;
 
   myChart.update();
+
+  spinner.classList.toggle("invisible");
 }
 
 loadHosts();
