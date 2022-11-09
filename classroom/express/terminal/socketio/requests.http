@@ -1,0 +1,26 @@
+### Connect to terminal 1
+
+POST http://localhost:3000/terminal
+Content-Type: application/json
+
+{
+  "id": 1,
+  "hostname": "data",
+  "host": "10.0.4.64",
+  "port": 22,
+  "username": "ifpb",
+  "password": "ifpb"
+}
+
+### Connect to terminal 2
+
+POST http://localhost:3000/terminal
+Content-Type: application/json
+
+{
+  "id": 2,
+  "host": "10.0.4.180",
+  "port": 22,
+  "username": "ifpb",
+  "password": "ifpb"
+}
