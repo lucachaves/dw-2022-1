@@ -3,26 +3,44 @@ const form = document.querySelector('form');
 async function handleSubmit(event) {
   event.preventDefault();
 
-  // const [name, email, password, confirmationPassword] =
-  //   document.querySelectorAll('input');
+  if (form.checkValidity()) {
+    const user = Object.fromEntries(new FormData(form));
 
-  // const user = { name, email, password, confirmationPassword };
+    const config = {
+      method: 'post',
+      body: JSON.stringify(user),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    };
 
-  const user = Object.fromEntries(new FormData(form));
+    const response = await fetch('http://localhost:3000/users', config);
 
-  const config = {
-    method: 'post',
-    body: JSON.stringify(user),
-    headers: {
-      'Content-Type': 'application/json',
-    },
-  };
-
-  const response = await fetch('http://localhost:3000/users', config);
-
-  if (response.ok) {
-    location.href = '/signin.html';
+    if (response.ok) {
+      location.href = '/signin.html';
+    } else {
+      console.log('Error no cadastro');
+    }
   } else {
-    console.log('Error no cadastro');
+    form.classList.add('was-validated');
   }
 }
+
+form.confirmationPassword.addEventListener('input', () => {
+  const password = form.password.value;
+  const confirmationPassword = form.confirmationPassword.value;
+
+  if (password !== confirmationPassword) {
+    const error = 'As senhas não são iguais.';
+
+    const confirmationPasswordError = document.querySelector(
+      '#confirmationPassword + .invalid-feedback'
+    );
+
+    confirmationPasswordError.textContent = error;
+
+    form.confirmationPassword.setCustomValidity(error);
+  } else {
+    form.confirmationPassword.setCustomValidity('');
+  }
+});

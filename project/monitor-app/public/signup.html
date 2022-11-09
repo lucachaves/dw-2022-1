@@ -73,23 +73,47 @@
       <h1 class="text-center my-5 fw-bold">Cadastro de Usuário</h1>
 
       <div class="row justify-content-center">
-        <form class="col-6" onsubmit="handleSubmit(event)">
+        <form
+          class="col-6 needs-validation"
+          onsubmit="handleSubmit(event)"
+          novalidate
+        >
           <div class="mb-3">
             <label for="name" class="form-label">Nome</label>
-            <input type="text" class="form-control" id="name" name="name" />
+            <input
+              type="text"
+              class="form-control"
+              id="name"
+              name="name"
+              required
+            />
+            <div class="invalid-feedback">Informe o nome do usuário.</div>
           </div>
           <div class="mb-3">
             <label for="email" class="form-label">Email</label>
-            <input type="email" class="form-control" id="email" name="email" />
+            <input
+              type="email"
+              class="form-control"
+              id="email"
+              name="email"
+              required
+            />
+            <div class="invalid-feedback">Informe o email do usuário.</div>
           </div>
           <div class="mb-3">
             <label for="password" class="form-label">Senha</label>
+            <!-- pattern="(?=.*[A-Z])(?=.*[!@#$&*])(?=.*[0-9])(?=.*[a-z]).{8}" -->
             <input
               type="password"
               class="form-control"
               id="password"
               name="password"
+              minlength="8"
+              required
             />
+            <div class="invalid-feedback">
+              Informe a senha com 8 caracteres.
+            </div>
           </div>
           <div class="mb-3">
             <label for="confirmationPassword" class="form-label"
@@ -100,7 +124,9 @@
               class="form-control"
               id="confirmationPassword"
               name="confirmationPassword"
+              required
             />
+            <div class="invalid-feedback">Informe a confirmação de senha.</div>
           </div>
           <div class="mb-3">
             <input type="submit" class="btn btn-primary" value="Cadastrar" />
