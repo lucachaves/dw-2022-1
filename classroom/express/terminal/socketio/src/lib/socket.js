@@ -4,23 +4,21 @@ import ssh2 from 'ssh2';
 
 const SSHClient = ssh2.Client;
 
-export async function loadSocket(io, host) {
+export async function loadSocket(io, config, channel) {
   io.on('connection', (socket) => {
     console.log('a user connected');
 
-    const conn = new SSHClient();
+    const sshConnection = new SSHClient();
 
-    const channel = `data`;
+    const { host, username, password } = config;
 
-    // const channel = `data${host.id}`;
-
-    conn
+    sshConnection
       .on('ready', function () {
-        console.log(`connection channel ${channel} `);
+        console.log(`connection channel ${channel}`);
 
         socket.emit(channel, '\r\n*** SSH CONNECTION ESTABLISHED ***\r\n');
 
-        conn.shell(function (err, stream) {
+        sshConnection.shell(function (err, stream) {
           if (err)
             return socket.emit(
               channel,
@@ -30,11 +28,11 @@ export async function loadSocket(io, host) {
             stream.write(data);
           });
           stream
-            .on(channel, function (d) {
+            .on('data', function (d) {
               socket.emit(channel, d.toString('binary'));
             })
             .on('close', function () {
-              conn.end();
+              sshConnection.end();
             });
         });
       })
@@ -47,7 +45,7 @@ export async function loadSocket(io, host) {
           '\r\n*** SSH CONNECTION ERROR: ' + err.message + ' ***\r\n'
         );
       })
-      .connect(host);
+      .connect({ host, username, password });
 
     socket.on('disconnect', () => {
       console.log('user disconnected');

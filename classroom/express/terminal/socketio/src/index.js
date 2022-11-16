@@ -22,9 +22,11 @@ app.use(express.static('public'));
 app.post('/terminal', async (req, res) => {
   const host = req.body;
 
-  await loadSocket(io, host);
+  const channel = `data${host.id}`;
 
-  res.json({ message: 'terminal opened' });
+  await loadSocket(io, host, channel);
+
+  res.json({ message: 'terminal opened', channel });
 });
 
 server.listen(3000, () => {
