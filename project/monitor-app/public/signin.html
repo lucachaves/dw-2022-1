@@ -69,7 +69,7 @@
         </div>
       </div>
     </nav>
-    <div class="container">
+    <div class="container position-relative">
       <h1 class="text-center my-5 fw-bold">Entrar</h1>
 
       <div class="row justify-content-center">
@@ -92,6 +92,27 @@
           </div>
         </form>
       </div>
+
+      <div class="position-absolute top-0 end-0 p-3" style="z-index: 11">
+        <div
+          id="liveToast"
+          class="toast bg-warning"
+          role="alert"
+          aria-live="assertive"
+          aria-atomic="true"
+          data-bs-delay="4000"
+        >
+          <div class="toast-header">
+            <strong class="me-auto"></strong>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="toast"
+              aria-label="Close"
+            ></button>
+          </div>
+        </div>
+      </div>
     </div>
 
     <script
@@ -99,5 +120,6 @@
       integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa"
       crossorigin="anonymous"
     ></script>
+    <script src="./js/signin.js" type="module"></script>
   </body>
 </html>

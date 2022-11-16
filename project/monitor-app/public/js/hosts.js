@@ -1,4 +1,11 @@
-const tbody = document.querySelector("tbody");
+import Auth from './auth.js';
+
+window.loadChartData = loadChartData;
+window.removeHost = removeHost;
+window.handleSubmit = handleSubmit;
+window.signout = Auth.signout;
+
+const tbody = document.querySelector('tbody');
 
 let hosts = [];
 let myChart;
@@ -16,11 +23,18 @@ function insertHostRow({ id, name, address }) {
     </td>
   </tr>`;
 
-  tbody.insertAdjacentHTML("beforeend", hostRow);
+  tbody.insertAdjacentHTML('beforeend', hostRow);
 }
 
 async function loadHosts() {
-  hosts = await (await fetch("http://localhost:3000/hosts")).json();
+  const config = {
+    method: 'get',
+    headers: {
+      Authorization: `Bearer ${Auth.getToken()}`,
+    },
+  };
+
+  hosts = await (await fetch('http://localhost:3000/hosts', config)).json();
 
   hosts.map((host) => insertHostRow(host));
 }
@@ -28,7 +42,7 @@ async function loadHosts() {
 async function handleSubmit(event) {
   event.preventDefault();
 
-  const [name, address] = document.querySelectorAll("input");
+  const [name, address] = document.querySelectorAll('input');
 
   const host = {
     name: name.value,
@@ -36,15 +50,16 @@ async function handleSubmit(event) {
   };
 
   const config = {
-    method: "post",
+    method: 'post',
     body: JSON.stringify(host),
     headers: {
-      "Content-Type": "application/json",
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${Auth.getToken()}`,
     },
   };
 
   const newHost = await (
-    await fetch("http://localhost:3000/hosts", config)
+    await fetch('http://localhost:3000/hosts', config)
   ).json();
 
   insertHostRow(newHost);
@@ -61,7 +76,10 @@ function removeHost(id, name) {
     tr.remove();
 
     const config = {
-      method: "delete",
+      method: 'delete',
+      headers: {
+        Authorization: `Bearer ${Auth.getToken()}`,
+      },
     };
 
     fetch(`http://localhost:3000/hosts/${id}`, config);
@@ -79,7 +97,7 @@ function initChart() {
   };
 
   const config = {
-    type: "line",
+    type: 'line',
     data: data,
     options: {
       plugins: {
@@ -90,16 +108,23 @@ function initChart() {
     },
   };
 
-  myChart = new Chart(document.getElementById("myChart"), config);
+  myChart = new Chart(document.getElementById('myChart'), config);
 }
 
 async function loadChartData(id) {
   const spinner = document.querySelector(`#host-${id} .spinner-border`);
 
-  spinner.classList.toggle("invisible");
+  spinner.classList.toggle('invisible');
+
+  const config = {
+    method: 'get',
+    headers: {
+      Authorization: `Bearer ${Auth.getToken()}`,
+    },
+  };
 
   const response = await (
-    await fetch(`http://localhost:3000/hosts/${id}/times?count=3`)
+    await fetch(`http://localhost:3000/hosts/${id}/times?count=3`, config)
   ).json();
 
   const data = response.times;
@@ -112,9 +137,11 @@ async function loadChartData(id) {
 
   myChart.update();
 
-  spinner.classList.toggle("invisible");
+  spinner.classList.toggle('invisible');
 }
 
-loadHosts();
+if (Auth.isAuthenticated()) {
+  loadHosts();
 
-initChart();
+  initChart();
+}
