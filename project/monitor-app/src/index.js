@@ -1,3 +1,5 @@
+import 'express-async-errors';
+import 'dotenv/config';
 import express from 'express';
 import morgan from 'morgan';
 
@@ -9,9 +11,9 @@ const app = express();
 
 app.use(express.json());
 
-app.use(express.static('public'));
-
 app.use(morgan('tiny'));
+
+app.use(express.static('public'));
 
 app.use(routes);
 

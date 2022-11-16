@@ -1,22 +1,27 @@
 @host = http://localhost:3000
 @createHostId = {{createHost.response.body.id}}
+@token = {{signin.response.body.token}}
 
 ### Get latency
 
 GET {{host}}/hosts/{{createHostId}}/times
+Authorization: bearer {{token}}
 
 ### Get latency with specific count
 
 GET {{host}}/hosts/{{createHostId}}/times?count=3
+Authorization: bearer {{token}}
 
 ### List Hosts
 
 GET {{host}}/hosts
+Authorization: bearer {{token}}
 
 ### Create Host
 
 # @name createHost
 POST {{host}}/hosts
+Authorization: bearer {{token}}
 Content-Type: application/json
 
 {
@@ -27,6 +32,7 @@ Content-Type: application/json
 ### Update Host
 
 PUT {{host}}/hosts/{{createHostId}}
+Authorization: bearer {{token}}
 Content-Type: application/json
 
 {
@@ -37,10 +43,12 @@ Content-Type: application/json
 ### Remove host
 
 DELETE {{host}}/hosts/{{createHostId}}
+Authorization: bearer {{token}}
 
 ### List Users
 
 GET {{host}}/users
+Authorization: bearer {{token}}
 
 ### Create User
 
@@ -52,4 +60,26 @@ Content-Type: application/json
   "name": "Luiz",
   "email": "luiz@email.com",
   "password": "123"
+}
+
+### Signin
+
+# @name signin
+POST {{host}}/signin
+Content-Type: application/json
+
+{
+  "email": "luiz@email.com",
+  "password": "123"
+}
+
+### Signin 401
+
+# @name signin
+POST {{host}}/signin
+Content-Type: application/json
+
+{
+  "email": "luiz@email.com",
+  "password": "321"
 }

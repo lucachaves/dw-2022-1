@@ -1,9 +1,9 @@
-import { v4 as uuidv4 } from "uuid";
-import bcrypt from "bcrypt";
+import { v4 as uuidv4 } from 'uuid';
+import bcrypt from 'bcrypt';
 
-const saltRounds = 10;
+const saltRounds = Number(process.env.SALT);
 
-import db from "../database/index.js";
+import db from '../database/index.js';
 
 function readAll() {
   return db.users;
@@ -11,6 +11,12 @@ function readAll() {
 
 function read(id) {
   const user = db.users.find((user) => user.id === id);
+
+  return user;
+}
+
+function readByEmail(email) {
+  const user = db.users.find((user) => user.email === email);
 
   return user;
 }
@@ -46,6 +52,7 @@ function remove(id) {
 export default {
   readAll,
   read,
+  readByEmail,
   create,
   remove,
   update,
