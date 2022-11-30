@@ -13,8 +13,8 @@ const router = express.Router();
 
 router.get('/', (req, res) => res.redirect('/hosts.html'));
 
-router.get('/users', isAuthenticated, (req, res) => {
-  const users = Users.readAll();
+router.get('/users', isAuthenticated, async (req, res) => {
+  const users = await Users.readAll();
 
   res.json(users);
 });
@@ -26,8 +26,6 @@ router.post('/users', async (req, res) => {
 
   const newUser = await Users.create(user);
 
-  // delete newUser.password;
-
   res.status(201).json(newUser);
 });
 
@@ -35,7 +33,7 @@ router.post('/signin', async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    const { id: userId, password: hash } = Users.readByEmail(email);
+    const { id: userId, password: hash } = await Users.readByEmail(email);
 
     const match = await bcrypt.compare(password, hash);
 
@@ -55,32 +53,32 @@ router.post('/signin', async (req, res) => {
   }
 });
 
-router.get('/hosts', isAuthenticated, (req, res) => {
-  const hosts = Hosts.readAll();
+router.get('/hosts', isAuthenticated, async (req, res) => {
+  const hosts = await Hosts.readAll();
 
   res.json(hosts);
 });
 
-router.post('/hosts', isAuthenticated, (req, res) => {
+router.post('/hosts', isAuthenticated, async (req, res) => {
   const host = req.body;
 
-  const newHost = Hosts.create(host);
+  const newHost = await Hosts.create(host);
 
   res.status(201).json(newHost);
 });
 
-router.put('/hosts/:id', isAuthenticated, (req, res) => {
-  const id = req.params.id;
+router.put('/hosts/:id', isAuthenticated, async (req, res) => {
+  const id = Number(req.params.id);
 
   const host = req.body;
 
-  const newHost = Hosts.update(host, id);
+  const newHost = await Hosts.update(host, id);
 
   res.json(newHost);
 });
 
-router.delete('/hosts/:id', isAuthenticated, (req, res) => {
-  const id = req.params.id;
+router.delete('/hosts/:id', isAuthenticated, async (req, res) => {
+  const id = Number(req.params.id);
 
   Hosts.remove(id);
 
@@ -88,9 +86,9 @@ router.delete('/hosts/:id', isAuthenticated, (req, res) => {
 });
 
 router.get('/hosts/:hostId/times', isAuthenticated, async (req, res) => {
-  const hostId = req.params.hostId;
+  const hostId = Number(req.params.hostId);
 
-  const host = Hosts.read(hostId);
+  const host = await Hosts.read(hostId);
 
   const count = req.query.count;
 

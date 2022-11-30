@@ -1,41 +1,46 @@
-import { v4 as uuidv4 } from "uuid";
+import prisma from '../database/index.js';
 
-import db from "../database/index.js";
+async function readAll() {
+  const hosts = await prisma.host.findMany();
 
-function readAll() {
-  return db.hosts;
+  return hosts;
 }
 
-function read(id) {
-  const host = db.hosts.find((host) => host.id === id);
+async function read(id) {
+  const host = await prisma.host.findFirst({
+    where: {
+      id,
+    },
+  });
 
   return host;
 }
 
-function create(host) {
-  const id = uuidv4();
-
-  const newHost = { ...host, id };
-
-  db.hosts.push(newHost);
+async function create(host) {
+  const newHost = await prisma.host.create({
+    data: host,
+  });
 
   return newHost;
 }
 
-function update(host, id) {
-  const newHost = { ...host, id };
-
-  const index = db.hosts.findIndex((host) => host.id === id);
-
-  db.hosts[index] = newHost;
+async function update(host, id) {
+  const newHost = await prisma.host.update({
+    data: host,
+    where: {
+      id,
+    },
+  });
 
   return newHost;
 }
 
-function remove(id) {
-  const index = db.hosts.findIndex((host) => host.id === id);
-
-  db.hosts.splice(index, 1);
+async function remove(id) {
+  await prisma.host.delete({
+    where: {
+      id,
+    },
+  });
 }
 
 export default {

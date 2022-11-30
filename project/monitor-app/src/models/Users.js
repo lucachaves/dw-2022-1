@@ -1,52 +1,68 @@
-import { v4 as uuidv4 } from 'uuid';
 import bcrypt from 'bcrypt';
 
 const saltRounds = Number(process.env.SALT);
 
-import db from '../database/index.js';
+import prisma from '../database/index.js';
 
-function readAll() {
-  return db.users;
+async function readAll() {
+  const users = await prisma.host.findMany();
+
+  return users;
 }
 
-function read(id) {
-  const user = db.users.find((user) => user.id === id);
+async function read(id) {
+  const user = await prisma.user.findFirst({
+    where: {
+      id,
+    },
+  });
 
   return user;
 }
 
-function readByEmail(email) {
-  const user = db.users.find((user) => user.email === email);
+async function readByEmail(email) {
+  const user = await prisma.user.findFirst({
+    where: {
+      email,
+    },
+  });
 
   return user;
 }
 
 async function create(user) {
-  const id = uuidv4();
-
   const hash = await bcrypt.hash(user.password, saltRounds);
 
-  const newUser = { ...user, id, password: hash };
+  user.password = hash;
 
-  db.users.push(newUser);
+  const newHost = await prisma.user.create({
+    data: user,
+  });
 
-  return newUser;
+  return newHost;
 }
 
-function update(user, id) {
-  const newUser = { ...user, id };
+async function update(user, id) {
+  const hash = await bcrypt.hash(user.password, saltRounds);
 
-  const index = db.users.findIndex((user) => user.id === id);
+  user.password = hash;
 
-  db.users[index] = newUser;
+  const newHost = await prisma.user.update({
+    data: user,
+    where: {
+      id,
+    },
+  });
 
-  return newUser;
+  return newHost;
 }
 
-function remove(id) {
-  const index = db.users.findIndex((user) => user.id === id);
-
-  db.users.splice(index, 1);
+async function remove(id) {
+  await prisma.user.delete({
+    where: {
+      id,
+    },
+  });
 }
 
 export default {
