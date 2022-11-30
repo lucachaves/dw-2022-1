@@ -1,9 +1,13 @@
 import express from 'express';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
+import { PrismaClient } from '@prisma/client';
 
-import Hosts from './models/Hosts.js';
-import Users from './models/Users.js';
+const saltRounds = Number(process.env.SALT);
+
+const prisma = new PrismaClient({
+  log: ['query', 'info', 'warn', 'error'],
+});
 
 import { isAuthenticated } from './middleware/auth.js';
 
@@ -13,20 +17,22 @@ const router = express.Router();
 
 router.get('/', (req, res) => res.redirect('/hosts.html'));
 
-router.get('/users', isAuthenticated, (req, res) => {
-  const users = Users.readAll();
+router.get('/users', isAuthenticated, async (req, res) => {
+  const users = await prisma.user.findMany();
 
   res.json(users);
 });
 
 router.post('/users', async (req, res) => {
-  const user = req.body;
+  const data = req.body;
 
-  delete user.confirmationPassword;
+  delete data.confirmationPassword;
 
-  const newUser = await Users.create(user);
+  const hash = await bcrypt.hash(data.password, saltRounds);
 
-  // delete newUser.password;
+  data.password = hash;
+
+  const newUser = await prisma.user.create({ data });
 
   res.status(201).json(newUser);
 });
@@ -35,7 +41,13 @@ router.post('/signin', async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    const { id: userId, password: hash } = Users.readByEmail(email);
+    const user = await prisma.user.findFirst({
+      where: {
+        email,
+      },
+    });
+
+    const { id: userId, password: hash } = user;
 
     const match = await bcrypt.compare(password, hash);
 
@@ -55,44 +67,59 @@ router.post('/signin', async (req, res) => {
   }
 });
 
-router.get('/hosts', isAuthenticated, (req, res) => {
-  const hosts = Hosts.readAll();
+router.get('/hosts', isAuthenticated, async (req, res) => {
+  const hosts = await prisma.host.findMany();
 
   res.json(hosts);
 });
 
-router.post('/hosts', isAuthenticated, (req, res) => {
-  const host = req.body;
+router.post('/hosts', isAuthenticated, async (req, res) => {
+  const data = req.body;
 
-  const newHost = Hosts.create(host);
+  const newHost = await prisma.host.create({
+    data,
+  });
 
   res.status(201).json(newHost);
 });
 
-router.put('/hosts/:id', isAuthenticated, (req, res) => {
-  const id = req.params.id;
+router.put('/hosts/:id', isAuthenticated, async (req, res) => {
+  const id = Number(req.params.id);
 
-  const host = req.body;
+  const data = req.body;
 
-  const newHost = Hosts.update(host, id);
+  const newHost = await prisma.host.update({
+    where: {
+      id: Number(id),
+    },
+    data,
+  });
 
   res.json(newHost);
 });
 
-router.delete('/hosts/:id', isAuthenticated, (req, res) => {
-  const id = req.params.id;
+router.delete('/hosts/:id', isAuthenticated, async (req, res) => {
+  const id = Number(req.params.id);
 
-  Hosts.remove(id);
+  await prisma.host.deleteMany({
+    where: {
+      id,
+    },
+  });
 
   res.status(204).send();
 });
 
 router.get('/hosts/:hostId/times', isAuthenticated, async (req, res) => {
-  const hostId = req.params.hostId;
-
-  const host = Hosts.read(hostId);
+  const id = Number(req.params.hostId);
 
   const count = req.query.count;
+
+  const host = await prisma.host.findFirst({
+    where: {
+      id,
+    },
+  });
 
   const { times } = await getHostLatency(host.address, count);
 
@@ -108,7 +135,7 @@ router.use((req, res, next) => {
 
 // Error handler
 router.use((err, req, res, next) => {
-  // console.error(err.stack);
+  console.error(err.stack);
   res.status(500).send('Something broke!');
 });
 
