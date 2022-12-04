@@ -21,4 +21,16 @@ model Host {
   id      Int    @id @default(autoincrement())
   name    String
   address String @unique
+
+  reachabilities Reachability[]
+}
+
+model Reachability {
+  id          Int      @id @default(autoincrement())
+  transmitted Int
+  received    Int
+  createdAt   DateTime @default(now())
+
+  host   Host @relation(fields: [hostId], references: [id])
+  hostId Int
 }

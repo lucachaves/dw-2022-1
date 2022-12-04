@@ -113,7 +113,7 @@ router.delete('/hosts/:id', isAuthenticated, async (req, res) => {
 router.get('/hosts/:hostId/times', isAuthenticated, async (req, res) => {
   const id = Number(req.params.hostId);
 
-  const count = req.query.count;
+  const count = Number(req.query.count ?? 1);
 
   const host = await prisma.host.findFirst({
     where: {
@@ -122,6 +122,16 @@ router.get('/hosts/:hostId/times', isAuthenticated, async (req, res) => {
   });
 
   const { times } = await getHostLatency(host.address, count);
+
+  const reachability = await prisma.reachability.create({
+    data: {
+      hostId: id,
+      transmitted: count,
+      received: times.length,
+    },
+  });
+
+  console.log(reachability);
 
   res.json({
     times,
