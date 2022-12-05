@@ -1,25 +1,26 @@
-import express from 'express';
-import bcrypt from 'bcrypt';
-import jwt from 'jsonwebtoken';
+import express from "express";
+import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
 
-import Hosts from './models/Hosts.js';
-import Users from './models/Users.js';
+import Hosts from "./models/Hosts.js";
+import Users from "./models/Users.js";
 
-import { isAuthenticated } from './middleware/auth.js';
+import { isAuthenticated } from "./middleware/auth.js";
 
-import { getHostLatency } from './lib/network.js';
+import { getHostLatency } from "./lib/network.js";
+import prisma from "./database/index.js";
 
 const router = express.Router();
 
-router.get('/', (req, res) => res.redirect('/hosts.html'));
+router.get("/", (req, res) => res.redirect("/hosts.html"));
 
-router.get('/users', isAuthenticated, async (req, res) => {
+router.get("/users", isAuthenticated, async (req, res) => {
   const users = await Users.readAll();
 
   res.json(users);
 });
 
-router.post('/users', async (req, res) => {
+router.post("/users", async (req, res) => {
   const user = req.body;
 
   delete user.confirmationPassword;
@@ -29,7 +30,7 @@ router.post('/users', async (req, res) => {
   res.status(201).json(newUser);
 });
 
-router.post('/signin', async (req, res) => {
+router.post("/signin", async (req, res) => {
   try {
     const { email, password } = req.body;
 
@@ -46,20 +47,20 @@ router.post('/signin', async (req, res) => {
 
       res.json({ auth: true, token });
     } else {
-      throw new Error('User not found');
+      throw new Error("User not found");
     }
   } catch (error) {
-    res.status(401).json({ error: 'User not found' });
+    res.status(401).json({ error: "User not found" });
   }
 });
 
-router.get('/hosts', isAuthenticated, async (req, res) => {
+router.get("/hosts", isAuthenticated, async (req, res) => {
   const hosts = await Hosts.readAll();
 
   res.json(hosts);
 });
 
-router.post('/hosts', isAuthenticated, async (req, res) => {
+router.post("/hosts", isAuthenticated, async (req, res) => {
   const host = req.body;
 
   const newHost = await Hosts.create(host);
@@ -67,7 +68,7 @@ router.post('/hosts', isAuthenticated, async (req, res) => {
   res.status(201).json(newHost);
 });
 
-router.put('/hosts/:id', isAuthenticated, async (req, res) => {
+router.put("/hosts/:id", isAuthenticated, async (req, res) => {
   const id = Number(req.params.id);
 
   const host = req.body;
@@ -77,7 +78,7 @@ router.put('/hosts/:id', isAuthenticated, async (req, res) => {
   res.json(newHost);
 });
 
-router.delete('/hosts/:id', isAuthenticated, async (req, res) => {
+router.delete("/hosts/:id", isAuthenticated, async (req, res) => {
   const id = Number(req.params.id);
 
   Hosts.remove(id);
@@ -85,14 +86,22 @@ router.delete('/hosts/:id', isAuthenticated, async (req, res) => {
   res.status(204).send();
 });
 
-router.get('/hosts/:hostId/times', isAuthenticated, async (req, res) => {
+router.get("/hosts/:hostId/times", isAuthenticated, async (req, res) => {
   const hostId = Number(req.params.hostId);
 
   const host = await Hosts.read(hostId);
 
-  const count = req.query.count;
+  const count = Number(req.query.count ?? 1);
 
   const { times } = await getHostLatency(host.address, count);
+
+  await prisma.reachability.create({
+    data: {
+      transmitted: count,
+      received: times.length,
+      hostId,
+    },
+  });
 
   res.json({
     times,
@@ -101,13 +110,13 @@ router.get('/hosts/:hostId/times', isAuthenticated, async (req, res) => {
 
 // 404 handler
 router.use((req, res, next) => {
-  res.status(404).send('Content not found!');
+  res.status(404).send("Content not found!");
 });
 
 // Error handler
 router.use((err, req, res, next) => {
   // console.error(err.stack);
-  res.status(500).send('Something broke!');
+  res.status(500).send("Something broke!");
 });
 
 export default router;
